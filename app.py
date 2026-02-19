@@ -10,13 +10,10 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 from dotenv import load_dotenv
 
-# LangChain (Gemini only)
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-# =====================================================
-# CONFIG
-# =====================================================
+
 
 load_dotenv()
 
@@ -26,9 +23,6 @@ st.set_page_config(
     page_icon="🧑‍⚕️"
 )
 
-# =====================================================
-# LOAD MODELS (cached for performance)
-# =====================================================
 
 @st.cache_resource
 def load_models():
@@ -40,9 +34,6 @@ def load_models():
 
 diabetes_model, heart_disease_model, insurance_cost_model, calories_model = load_models()
 
-# =====================================================
-# GEMINI MODELS
-# =====================================================
 
 gemini_flash = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
@@ -69,9 +60,6 @@ Rules:
 - Be concise, calm, and clear.
 """
 
-# =====================================================
-# CHATBOT LOGIC
-# =====================================================
 
 def get_medical_response(user_query, chat_history):
 
