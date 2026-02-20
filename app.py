@@ -131,24 +131,6 @@ if selected == "Diabetes Prediction":
         pred = diabetes_model.predict([values])
         st.success("The person is diabetic" if pred[0] == 1 else "The person is not diabetic")
 
-    if st.checkbox("Show Health Gauge"):
-        metrics = {
-            "Glucose": {"value": Glucose, "min": 0, "max": 200, "median": 117},
-            "Blood Pressure": {"value": BloodPressure, "min": 0, "max": 130, "median": 72},
-            "BMI": {"value": BMI, "min": 10, "max": 70, "median": 32},
-            "Age": {"value": Age, "min": 18, "max": 100, "median": 29}
-        }
-
-        metric = st.selectbox("Select Metric", list(metrics.keys()))
-        data = metrics[metric]
-
-        colA,colB,colC = st.columns([1,2,1])
-        with colB:
-            st.plotly_chart(
-                dark_luxury_gauge(metric, data["value"], data["min"], data["max"], data["median"]),
-                use_container_width=True
-            )
-
 if selected == "Heart Disease Prediction":
     st.title("Heart Disease Prediction")
 
@@ -173,6 +155,24 @@ if selected == "Heart Disease Prediction":
                   exang, oldpeak, slope, ca, thal]
         pred = heart_disease_model.predict([values])
         st.success("Heart disease detected" if pred[0] == 1 else "No heart disease detected")
+
+    if st.checkbox("Show Heart Health Gauge"):
+        metrics = {
+            "Cholesterol": {"value": chol, "min": 100, "max": 600, "median": 245},
+            "Max Heart Rate": {"value": thalach, "min": 60, "max": 220, "median": 150},
+            "Resting BP": {"value": trestbps, "min": 80, "max": 220, "median": 120},
+            "ST Depression": {"value": oldpeak, "min": 0, "max": 7, "median": 0.8}
+        }
+
+        metric = st.selectbox("Select Metric", list(metrics.keys()))
+        data = metrics[metric]
+
+        colA, colB, colC = st.columns([1,2,1])
+        with colB:
+            st.plotly_chart(
+                dark_luxury_gauge(metric, data["value"], data["min"], data["max"], data["median"]),
+                use_container_width=True
+            )
 
 if selected == "Medical Chatbot":
     st.title("Medical Chatbot 💬")
