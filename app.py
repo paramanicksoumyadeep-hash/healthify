@@ -76,7 +76,7 @@ def animated_speedometer(title, value, min_val, max_val, median_val):
 
     fig.update_layout(
         height=420,
-        margin=dict(t=50, b=0, l=0, r=0),
+        margin=dict(t=50, b=0, l=20, r=20),
         paper_bgcolor="#0E1117",
         font=dict(color="white"),
         transition={'duration': 800}
