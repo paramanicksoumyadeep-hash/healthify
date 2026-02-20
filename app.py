@@ -2,8 +2,7 @@
 
 import pickle
 import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 from streamlit_option_menu import option_menu
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
@@ -11,11 +10,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 load_dotenv()
 
-st.set_page_config(
-    page_title="Health Assistant",
-    layout="wide",
-    page_icon="🧑‍⚕️"
-)
+st.set_page_config(page_title="Health Assistant", layout="wide", page_icon="🧑‍⚕️")
 
 @st.cache_resource
 def load_models():
@@ -54,6 +49,41 @@ def get_medical_response(user_query, chat_history):
             except:
                 return "Assistant unavailable."
 
+def animated_speedometer(title, value, min_val, max_val, median_val):
+    green_zone = min_val + (max_val - min_val) * 0.4
+    yellow_zone = min_val + (max_val - min_val) * 0.7
+
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number+delta",
+        value=value,
+        delta={"reference": median_val},
+        title={"text": f"<b>{title}</b>"},
+        gauge={
+            "axis": {"range": [min_val, max_val]},
+            "bar": {"color": "white", "thickness": 0.3},
+            "steps": [
+                {"range": [min_val, green_zone], "color": "#2ecc71"},
+                {"range": [green_zone, yellow_zone], "color": "#f1c40f"},
+                {"range": [yellow_zone, max_val], "color": "#e74c3c"}
+            ],
+            "threshold": {
+                "line": {"color": "cyan", "width": 4},
+                "thickness": 0.8,
+                "value": median_val
+            }
+        }
+    ))
+
+    fig.update_layout(
+        height=420,
+        margin=dict(t=50, b=0, l=0, r=0),
+        paper_bgcolor="#0E1117",
+        font=dict(color="white"),
+        transition={'duration': 800}
+    )
+
+    return fig
+
 with st.sidebar:
     selected = option_menu(
         "Health Care System",
@@ -90,15 +120,17 @@ if selected == "Diabetes Prediction":
         pred = diabetes_model.predict([values])
         st.success("The person is diabetic" if pred[0] == 1 else "The person is not diabetic")
 
-    if st.checkbox("Show Dataset Metrics"):
-        df = pd.DataFrame({
-            "Feature":["Pregnancies","Glucose","BloodPressure","BMI","Age"],
-            "Median":[3,117,72,32,29]
-        })
-        fig, ax = plt.subplots()
-        ax.bar(df["Feature"], df["Median"])
-        ax.set_title("Median Values - Diabetes Dataset")
-        st.pyplot(fig)
+    if st.checkbox("Show Health Gauge"):
+        metrics = {
+            "Glucose": {"value": Glucose, "min": 0, "max": 200, "median": 117},
+            "Blood Pressure": {"value": BloodPressure, "min": 0, "max": 130, "median": 72},
+            "BMI": {"value": BMI, "min": 10, "max": 70, "median": 32},
+            "Age": {"value": Age, "min": 18, "max": 100, "median": 29}
+        }
+
+        metric = st.selectbox("Select Metric", list(metrics.keys()))
+        data = metrics[metric]
+        st.plotly_chart(animated_speedometer(metric, data["value"], data["min"], data["max"], data["median"]), use_container_width=True)
 
 if selected == "Heart Disease Prediction":
     st.title("Heart Disease Prediction")
@@ -129,73 +161,16 @@ if selected == "Heart Disease Prediction":
         pred = heart_disease_model.predict([values])
         st.success("Heart disease detected" if pred[0] == 1 else "No heart disease detected")
 
-    if st.checkbox("Show Dataset Metrics"):
-        df = pd.DataFrame({
-            "Metric":["Age","Cholesterol","MaxHR"],
-            "Median":[55,245,150]
-        })
-        fig, ax = plt.subplots()
-        ax.bar(df["Metric"], df["Median"])
-        ax.set_title("Median Values - Heart Dataset")
-        st.pyplot(fig)
+    if st.checkbox("Show Health Gauge"):
+        metrics = {
+            "Cholesterol": {"value": chol, "min": 100, "max": 600, "median": 245},
+            "Max Heart Rate": {"value": thalach, "min": 60, "max": 220, "median": 150},
+            "ST Depression": {"value": oldpeak, "min": 0, "max": 7, "median": 0.8}
+        }
 
-if selected == "Medical Insurance Cost Calculator":
-    st.title("Medical Insurance Cost Calculator")
-
-    col1, col2, col3 = st.columns(3)
-
-    with col1: age = st.number_input("Age", 18, 100)
-    with col2: sex = st.number_input("Sex (0 male, 1 female)", 0, 1)
-    with col3: bmi = st.number_input("BMI", 10.0, 60.0)
-
-    with col1: children = st.number_input("Children", 0, 10)
-    with col2: smoker = st.number_input("Smoker (0 yes, 1 no)", 0, 1)
-    with col3: region = st.number_input("Region (0=NE, 1=NW, 2=SE, 3=SW)", 0, 3)
-
-    if st.button("Calculate Insurance"):
-        vals = [age, sex, bmi, children, smoker, region]
-        pred = insurance_cost_model.predict([vals])
-        st.success(f"Estimated Insurance Cost: ${pred[0]:.2f}")
-
-    if st.checkbox("Show Dataset Metrics"):
-        df = pd.DataFrame({
-            "Metric":["Age","BMI","Children"],
-            "Median":[39,30.4,1]
-        })
-        fig, ax = plt.subplots()
-        ax.bar(df["Metric"], df["Median"])
-        ax.set_title("Median Values - Insurance Dataset")
-        st.pyplot(fig)
-
-if selected == "Calories Burnt Calculator":
-    st.title("Calories Burnt Calculator")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1: Gender = st.number_input("Gender (0 male, 1 female)", 0, 1)
-    with col2: Age = st.number_input("Age", 15, 100)
-    with col3: Height = st.number_input("Height (cm)", 100.0, 250.0)
-    with col4: Weight = st.number_input("Weight (lbs)", 30.0, 300.0)
-
-    with col1: Duration = st.number_input("Duration (mins)", 1.0, 180.0)
-    with col2: Heart_Rate = st.number_input("Heart Rate", 50.0, 200.0)
-    with col3: Body_Temp = st.number_input("Body Temp (°C)", 35.0, 42.0)
-
-    if st.button("Calculate Calories Burnt"):
-        weight_kg = Weight * 0.453592
-        vals = [0, Gender, Age, Height, weight_kg, Duration, Heart_Rate, Body_Temp]
-        pred = calories_model.predict([vals])
-        st.success(f"Calories Burnt: {pred[0]:.2f}")
-
-    if st.checkbox("Show Dataset Metrics"):
-        df = pd.DataFrame({
-            "Metric":["Age","Height","Duration","HeartRate"],
-            "Median":[42,170,15,103]
-        })
-        fig, ax = plt.subplots()
-        ax.bar(df["Metric"], df["Median"])
-        ax.set_title("Median Values - Calories Dataset")
-        st.pyplot(fig)
+        metric = st.selectbox("Select Metric", list(metrics.keys()))
+        data = metrics[metric]
+        st.plotly_chart(animated_speedometer(metric, data["value"], data["min"], data["max"], data["median"]), use_container_width=True)
 
 if selected == "Medical Chatbot":
     st.title("Medical Chatbot 💬")
@@ -218,4 +193,3 @@ if selected == "Medical Chatbot":
                 reply = get_medical_response(user_input, st.session_state.chat_history[:-1])
                 st.markdown(reply)
         st.session_state.chat_history.append(AIMessage(content=reply))
-       
