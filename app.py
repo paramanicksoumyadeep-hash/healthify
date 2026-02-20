@@ -58,9 +58,9 @@ def get_medical_response(user_query, chat_history):
             except:
                 return "Assistant unavailable."
 
-def dark_luxury_gauge(title, value, median_val):
-    min_val = 0
-    max_val = 39
+def dark_luxury_gauge(title, value, min_val, max_val, median_val):
+    green_zone = min_val + (max_val - min_val) * 0.4
+    yellow_zone = min_val + (max_val - min_val) * 0.7
 
     fig = go.Figure(go.Indicator(
         mode="gauge+number+delta",
@@ -75,9 +75,9 @@ def dark_luxury_gauge(title, value, median_val):
             "borderwidth":2,
             "bordercolor":"#333",
             "steps":[
-                {"range":[0,13],"color":"#0f5132"},
-                {"range":[13,26],"color":"#664d03"},
-                {"range":[26,39],"color":"#842029"}
+                {"range":[min_val,green_zone],"color":"#0f5132"},
+                {"range":[green_zone,yellow_zone],"color":"#664d03"},
+                {"range":[yellow_zone,max_val],"color":"#842029"}
             ],
             "threshold":{
                 "line":{"color":"white","width":3},
@@ -117,14 +117,14 @@ if selected == "Diabetes Prediction":
 
     col1, col2, col3 = st.columns(3)
 
-    with col1: Pregnancies = st.number_input("Pregnancies", 0, 20)
-    with col2: Glucose = st.number_input("Glucose", 0.0, 200.0)
-    with col3: BloodPressure = st.number_input("Blood Pressure", 0.0, 130.0)
-    with col1: SkinThickness = st.number_input("Skin Thickness", 0.0, 100.0)
-    with col2: Insulin = st.number_input("Insulin", 0.0, 900.0)
-    with col3: BMI = st.number_input("BMI", 10.0, 70.0)
-    with col1: DPF = st.number_input("Diabetes Pedigree Function", 0.0, 3.0)
-    with col2: Age = st.number_input("Age", 18, 100)
+    with col1: Pregnancies = st.number_input("Pregnancies (0-20)", 0, 20)
+    with col2: Glucose = st.number_input("Glucose (0-200)", 0.0, 200.0)
+    with col3: BloodPressure = st.number_input("Blood Pressure (0-130)", 0.0, 130.0)
+    with col1: SkinThickness = st.number_input("Skin Thickness (0-100)", 0.0, 100.0)
+    with col2: Insulin = st.number_input("Insulin (0-900)", 0.0, 900.0)
+    with col3: BMI = st.number_input("BMI (10-70)", 10.0, 70.0)
+    with col1: DPF = st.number_input("Diabetes Pedigree Function (0-3)", 0.0, 3.0)
+    with col2: Age = st.number_input("Age (18-100)", 18, 100)
 
     if st.button("Diabetes Test Result"):
         values = [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DPF, Age]
@@ -133,10 +133,10 @@ if selected == "Diabetes Prediction":
 
     if st.checkbox("Show Health Gauge"):
         metrics = {
-            "Glucose": {"value": int(Glucose/5), "median": 23},
-            "Blood Pressure": {"value": int(BloodPressure/4), "median": 18},
-            "BMI": {"value": int(BMI/2), "median": 16},
-            "Age": {"value": int(Age/3), "median": 10}
+            "Glucose": {"value": Glucose, "min": 0, "max": 200, "median": 117},
+            "Blood Pressure": {"value": BloodPressure, "min": 0, "max": 130, "median": 72},
+            "BMI": {"value": BMI, "min": 10, "max": 70, "median": 32},
+            "Age": {"value": Age, "min": 18, "max": 100, "median": 29}
         }
 
         metric = st.selectbox("Select Metric", list(metrics.keys()))
@@ -144,46 +144,35 @@ if selected == "Diabetes Prediction":
 
         colA,colB,colC = st.columns([1,2,1])
         with colB:
-            st.plotly_chart(dark_luxury_gauge(metric, data["value"], data["median"]), use_container_width=True)
+            st.plotly_chart(
+                dark_luxury_gauge(metric, data["value"], data["min"], data["max"], data["median"]),
+                use_container_width=True
+            )
 
 if selected == "Heart Disease Prediction":
     st.title("Heart Disease Prediction")
 
     col1, col2, col3 = st.columns(3)
 
-    with col1: age = st.number_input("Age", 20, 100)
-    with col2: sex = st.number_input("Sex (0 male, 1 female)", 0, 1)
-    with col3: cp = st.number_input("Chest Pain Type", 0, 3)
-    with col1: trestbps = st.number_input("Resting BP", 80.0, 220.0)
-    with col2: chol = st.number_input("Cholesterol", 100.0, 600.0)
-    with col3: fbs = st.number_input("Fasting Blood Sugar", 0, 1)
-    with col1: restecg = st.number_input("Rest ECG", 0, 2)
-    with col2: thalach = st.number_input("Max Heart Rate", 60.0, 220.0)
-    with col3: exang = st.number_input("Exercise Angina", 0, 1)
-    with col1: oldpeak = st.number_input("ST Depression", 0.0, 7.0)
-    with col2: slope = st.number_input("Slope", 0, 2)
-    with col3: ca = st.number_input("Major Vessels", 0, 4)
-    with col1: thal = st.number_input("Thal", 0, 3)
+    with col1: age = st.number_input("Age (20-100)", 20, 100)
+    with col2: sex = st.number_input("Sex (0-1)", 0, 1)
+    with col3: cp = st.number_input("Chest Pain Type (0-3)", 0, 3)
+    with col1: trestbps = st.number_input("Resting BP (80-220)", 80.0, 220.0)
+    with col2: chol = st.number_input("Cholesterol (100-600)", 100.0, 600.0)
+    with col3: fbs = st.number_input("Fasting Blood Sugar (0-1)", 0, 1)
+    with col1: restecg = st.number_input("Rest ECG (0-2)", 0, 2)
+    with col2: thalach = st.number_input("Max Heart Rate (60-220)", 60.0, 220.0)
+    with col3: exang = st.number_input("Exercise Angina (0-1)", 0, 1)
+    with col1: oldpeak = st.number_input("ST Depression (0-7)", 0.0, 7.0)
+    with col2: slope = st.number_input("Slope (0-2)", 0, 2)
+    with col3: ca = st.number_input("Major Vessels (0-4)", 0, 4)
+    with col1: thal = st.number_input("Thal (0-3)", 0, 3)
 
     if st.button("Heart Disease Test Result"):
         values = [age, sex, cp, trestbps, chol, fbs, restecg, thalach,
                   exang, oldpeak, slope, ca, thal]
         pred = heart_disease_model.predict([values])
         st.success("Heart disease detected" if pred[0] == 1 else "No heart disease detected")
-
-    if st.checkbox("Show Health Gauge"):
-        metrics = {
-            "Cholesterol": {"value": int(chol/15), "median": 16},
-            "Max Heart Rate": {"value": int(thalach/6), "median": 25},
-            "ST Depression": {"value": int(oldpeak*5), "median": 4}
-        }
-
-        metric = st.selectbox("Select Metric", list(metrics.keys()))
-        data = metrics[metric]
-
-        colA,colB,colC = st.columns([1,2,1])
-        with colB:
-            st.plotly_chart(dark_luxury_gauge(metric, data["value"], data["median"]), use_container_width=True)
 
 if selected == "Medical Chatbot":
     st.title("Medical Chatbot 💬")
