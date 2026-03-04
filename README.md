@@ -1,7 +1,7 @@
 # 🩺 HealthifyX – Healthcare Analytics & Medical Chatbot
 
-**HealthifyX** is an interactive **healthcare analytics application** built using Python and data science techniques.  
-It leverages **machine learning models** for health-related predictions and includes an **AI-powered medical chatbot** that provides basic medical guidance to users.
+**HealthifyX** is an interactive **healthcare analytics application** built using Python and trained and tested on kaggle datasets.  
+It leverages **machine learning models like classification and linear regression** for health-related predictions and includes an **AI-powered medical chatbot** that provides basic medical guidance to users.
 
 🚀 **Live App:** https://healthifyx.streamlit.app/
 
@@ -9,7 +9,7 @@ It leverages **machine learning models** for health-related predictions and incl
 
 ## 🔍 Overview
 
-HealthifyX combines **data analytics, machine learning, and conversational AI** to deliver insights related to healthcare and wellness.  
+HealthifyX combines **Machine learning, and Conversational AI** to deliver insights related to healthcare and wellness.  
 The application focuses on three major predictive analytics tasks along with an intelligent chatbot interface.
 
 ---
@@ -24,7 +24,7 @@ The app uses **regression and classification models** to predict:
 - 💰 **Medical Insurance Cost Prediction** (Linear Regression)
 
 These models are trained using structured healthcare datasets and implemented using **Python and Pandas**.
-
+Datasets are
 ---
 
 ### 🤖 Medical Chatbot
@@ -32,7 +32,8 @@ These models are trained using structured healthcare datasets and implemented us
 - Powered by **Gemini-2.5-Flash**
 - Provides **basic medical advice**, health tips, and general wellness guidance
 - Designed strictly for **informational purposes**, not medical diagnosis
-
+-- **Healthcare Dataset (Heart disease, insurance, calories, etc.)**  
+  https://www.kaggle.com/datasets
 ---
 
 ## 🧰 Tech Stack
