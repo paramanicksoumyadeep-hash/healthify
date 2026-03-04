@@ -41,9 +41,9 @@ Datasets are
 - **Programming Language:** Python  
 - **Data Analysis:** Pandas, NumPy  
 - **Machine Learning:** Scikit-learn  
-- **App Framework:** :contentReference[oaicite:0]{index=0}  
+- **App Framework:** :Streamlit 
 - **LLM Integration:** LangChain  
-- **Medical Chatbot LLM:** :contentReference[oaicite:1]{index=1} (Gemini-2.5-Flash)  
+- **Medical Chatbot LLM:**: (Gemini-2.5-Flash)with fallback models
 - **Deployment:** Streamlit Community Cloud  
 
 ---
